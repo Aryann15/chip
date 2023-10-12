@@ -5,8 +5,8 @@ from langchain.document_loaders import YoutubeLoader
 from langchain.llms import OpenAI
 from langchain.chains.summarize import load_summarize_chain
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-
-
+from langchain import PromptTemplate
+from langchain.schema import SystemMessage
 app = Flask(__name__)
 CORS(app)
 
@@ -34,7 +34,7 @@ def prod_review():
         # texts = text_splitter.split_documents(result)
         map_prompt = """
 
-        Write a detailed review of the product using the followinf text:
+        Write a detailed review of the product using the following text:
 
         "{texts}"
 
@@ -42,7 +42,30 @@ def prod_review():
 
         """
 
-        chain = load_summarize_chain(llm, chain_type="map_reduce", verbose=True)
+        map_prompt_template = PromptTemplate(
+            template=map_prompt, input_variables=["texts"]
+        )
+
+
+        system_message = SystemMessage(
+            content="""You are a world class tech product Reviewer, who can do detailed research on any tech product facts based results; 
+            Your goal is to provide an accurate, unbiased review of the product based on thorough research.
+            
+            Please make sure you complete the objective above with the following rules:
+            1/ You should do enough research to gather as much information as possible about the objective
+            2/ Clearly state the purpose, features and specs of the product based on the information provided.
+            3/ Identify any issues, limitations, or areas for improvement in the product and I;llustrate the pros and cons of the product
+            4/ Use a professional, constructive tone without inflammatory language.
+            5/ The Review should not be too concise but an in-depth product review
+            6/ Give an overall rating between 1 to 5 with justification from your research""")
+
+        chain = load_summarize_chain(
+            llm,
+            chain_type="map_reduce",
+            map_prompt=map_prompt_template,
+            combine_prompt=map_prompt_template,
+            verbose=True,
+        )
         summary = chain.run(texts)
         return summary
 

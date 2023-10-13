@@ -8,6 +8,7 @@ import { useState } from "react";
 
 const Review = () => {
   const [product, setProduct] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleProduct = (event) => {
     setProduct(event.target.value);
@@ -15,6 +16,12 @@ const Review = () => {
 
 
     const handleSubmit = async () => {
+        if (isSubmitting) {
+            return; // Prevent multiple requests
+          }
+          
+          setIsSubmitting(true);
+
       const formData = new FormData();
       formData.append("product", product);
 
@@ -32,10 +39,11 @@ const Review = () => {
         }
       } catch (error) {
         console.error("Error", error);
+      } finally {
+        setIsSubmitting (false)
       }
     };
-  }
-
+  
   return (
     <>
       <Box sx={{ bgcolor: "#737CA1", height: "100vh" }}>

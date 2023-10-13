@@ -4,10 +4,17 @@ import Card from "@mui/material/Card";
 import TextField from "@mui/material/TextField";
 import { Typography } from "@mui/material";
 import Button from "@mui/material/Button";
+import { useState } from "react";
+
+
 
 const Review = () => {
-  return (
-    <>
+    const [product,setProduct] = useState (null)
+
+    const handleProduct = (event) => {
+        setProduct(event.target.value)
+    }
+  return (<>
       <Box sx={{ bgcolor: "#737CA1", height: "100vh" }}>
         <br />
         <Typography
@@ -16,6 +23,7 @@ const Review = () => {
           gutterBottom
           sx={{ mb: 2 }}
           color="#FFFFFF"
+          
         >
           Get a Detailed Review about your product!
         </Typography>
@@ -42,6 +50,7 @@ const Review = () => {
             id="outlined-basic"
             label="Product name"
             variant="outlined"
+            onChange = {handleProduct}
             style={{ width: 400, backgroundColor: "#E3E4FA" }}
           />
           <br />
@@ -53,6 +62,7 @@ const Review = () => {
             >
               submit
             </Button>
+            {console.log(product)}
           </div>
         </Card>
       </Box>

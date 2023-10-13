@@ -7,6 +7,10 @@ from langchain.chains.summarize import load_summarize_chain
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain import PromptTemplate
 from langchain.schema import SystemMessage
+from chain import Chain
+
+
+
 app = Flask(__name__)
 CORS(app)
 
@@ -22,7 +26,7 @@ def prod_review():
         text_splitter = RecursiveCharacterTextSplitter(
             separators=["\n\n", "\n"], chunk_size=1500, chunk_overlap=200
         )
-        url_lists = ["", ""]
+        url_lists = ["https://www.youtube.com/watch?v=_i_XWx05FTw", "https://www.youtube.com/watch?v=f4g2nPY-VZc","https://www.youtube.com/watch?v=3XpK9fM_HDM"]
         llm = OpenAI(temperature=0)
         texts = []
 
@@ -64,9 +68,10 @@ def prod_review():
             chain_type="map_reduce",
             map_prompt=map_prompt_template,
             combine_prompt=map_prompt_template,
+            system_message= [system_message],
             verbose=True,
         )
-        summary = chain.run(texts)
+        summary = chain.run(texts=texts)
         return summary
 
 

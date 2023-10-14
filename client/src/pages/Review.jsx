@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import TextField from "@mui/material/TextField";
@@ -8,42 +8,33 @@ import { useState } from "react";
 
 const Review = () => {
   const [product, setProduct] = useState(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [messages, setMessages] = useState([])
 
   const handleProduct = (event) => {
     setProduct(event.target.value);
   };
 
+  const handleSubmit = async () => {
+    const formData = new FormData();
+    formData.append("product", product);
+    try {
+      const response = await fetch("http://localhost:5000/review", {
+        method: "POST",
+        body: formData,
+      });
 
-    const handleSubmit = async () => {
-        if (isSubmitting) {
-            return; // Prevent multiple requests
-          }
-          
-          setIsSubmitting(true);
-
-      const formData = new FormData();
-      formData.append("product", product);
-
-      try {
-        const response = await fetch("http://localhost:5000/review", {
-          method: "POST",
-          body: formData,
-        });
-
-        if (response.ok) {
-          const result = await response.text();
-          alert(result);
-        } else {
-          alert("Something is wrong");
-        }
-      } catch (error) {
-        console.error("Error", error);
-      } finally {
-        setIsSubmitting (false)
+      if (response.ok) {
+        const data = await response.text();
+        const botResponse = data.response
+        setMessages(prev=> [...prev,{type:"bot",msg:botResponse}])
+      } else {
+        throw new Error("Something went wrong");
       }
-    };
-  
+    } catch (error) {
+      alert(error.message);
+    }
+  };
+
   return (
     <>
       <Box sx={{ bgcolor: "#737CA1", height: "100vh" }}>

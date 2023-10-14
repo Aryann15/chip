@@ -5,12 +5,13 @@ import TextField from "@mui/material/TextField";
 import { Typography } from "@mui/material";
 import Button from "@mui/material/Button";
 import { useState } from "react";
+import { useEffect } from "react";
 import "./styles.css";
 
 const Review = () => {
   const [product, setProduct] = useState(null);
-  const [messages, setMessages] = useState([]);
-
+  // const [messages, setMessages] = useState([]);
+  const [botResponse, setBotResponse] = useState("");
   const handleProduct = (event) => {
     setProduct(event.target.value);
   };
@@ -23,11 +24,15 @@ const Review = () => {
         method: "POST",
         body: formData,
       });
+      console.log(response.ok);
+      console.log(response.status);
 
       if (response.ok) {
-        const data = await response.text();
-        const botResponse = data.response;
-        setMessages((prev) => [...prev, { type: "bot", msg: botResponse }]);
+        const  data = await response.answer;
+          
+        console.log(data)
+        // console.log(data.body);
+        // setMessages((prev) => [...prev, { type: "bot", msg: botResponse }]);
       } else {
         throw new Error("Something went wrong");
       }
@@ -36,12 +41,14 @@ const Review = () => {
     }
   };
 
-  const scrollToBottom = () => {
-    const chat = document.getElementById("chat");
-    chat.scrollTop = chat.scrollHeight;
-  };
+  // const scrollToBottom = () => {
+  //   const chat = document.getElementById("chat");
+  //   chat.scrollTop = chat.scrollHeight;
+  // };
 
-  useEffect(scrollToBottom, [messages]);
+  // useEffect(() => {
+  //   scrollToBottom();
+  // }, [messages]);
 
   return (
     <>
@@ -93,8 +100,19 @@ const Review = () => {
               submit
             </Button>
             {console.log(product)}
+            
+            
           </div>
         </Card>
+        <Typography
+              variant="h5"
+              align="center"
+              gutterBottom
+              sx={{ mb: 2 }}
+              color="#FFFFFF"
+            >
+             {botResponse}
+            </Typography>
       </Box>
     </>
   );

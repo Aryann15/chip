@@ -19,9 +19,9 @@ CORS(app)
 def prod_review():
     load_dotenv()
 
-    urls = request.form["product"]
+    query = request.form["product"]
 
-    if urls:
+    if query:
         url_lists = [
             "https://www.youtube.com/watch?v=_i_XWx05FTw",
             "https://www.youtube.com/watch?v=f4g2nPY-VZc",
@@ -44,15 +44,23 @@ def prod_review():
             embeddings = OpenAIEmbeddings()
             print(cb)
         vectorstore = FAISS.from_texts(texts=chunks, embedding=embeddings)
+        print("vs init")
 
         memory = ConversationBufferMemory(
             memory_key="chat_history", return_messages=True
-        )
+        ) 
+        print("finished conversational memory")
         conv_chain = ConversationalRetrievalChain.from_llm(
             llm=llm, retriever=vectorstore.as_retriever(), memory=memory
         )
+        print("finished conversational chain")
 
-        return conv_chain
+        answer =  str (conv_chain({"question":query}))
+        print (answer)
+        return answer
+    
+
+        
 
     # return chunks
 

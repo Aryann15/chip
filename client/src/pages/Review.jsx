@@ -5,10 +5,11 @@ import TextField from "@mui/material/TextField";
 import { Typography } from "@mui/material";
 import Button from "@mui/material/Button";
 import { useState } from "react";
+import "./styles.css";
 
 const Review = () => {
   const [product, setProduct] = useState(null);
-  const [messages, setMessages] = useState([])
+  const [messages, setMessages] = useState([]);
 
   const handleProduct = (event) => {
     setProduct(event.target.value);
@@ -25,8 +26,8 @@ const Review = () => {
 
       if (response.ok) {
         const data = await response.text();
-        const botResponse = data.response
-        setMessages(prev=> [...prev,{type:"bot",msg:botResponse}])
+        const botResponse = data.response;
+        setMessages((prev) => [...prev, { type: "bot", msg: botResponse }]);
       } else {
         throw new Error("Something went wrong");
       }
@@ -34,6 +35,13 @@ const Review = () => {
       alert(error.message);
     }
   };
+
+  const scrollToBottom = () => {
+    const chat = document.getElementById("chat");
+    chat.scrollTop = chat.scrollHeight;
+  };
+
+  useEffect(scrollToBottom, [messages]);
 
   return (
     <>

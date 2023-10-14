@@ -2,10 +2,14 @@ from flask import Flask, request
 from flask_cors import CORS
 from dotenv import load_dotenv
 from langchain.document_loaders import YoutubeLoader
-from langchain.llms import OpenAI
+from langchain.chat_models import ChatOpenAI
 from langchain.chains.summarize import load_summarize_chain
 from langchain.text_splitter import CharacterTextSplitter
-
+from langchain.embeddings import OpenAIEmbeddings
+from langchain.vectorstores import FAISS
+from langchain.callbacks import get_openai_callback
+from langchain.memory import ConversationBufferMemory
+from langchain.chains import ConversationalRetrievalChain
 
 app = Flask(__name__)
 CORS(app)
@@ -18,13 +22,12 @@ def prod_review():
     urls = request.form["product"]
 
     if urls:
-        
         url_lists = [
             "https://www.youtube.com/watch?v=_i_XWx05FTw",
             "https://www.youtube.com/watch?v=f4g2nPY-VZc",
             "https://www.youtube.com/watch?v=3XpK9fM_HDM",
         ]
-        llm = OpenAI(temperature=0)
+        llm = ChatOpenAI(temperature=0)
         texts = ""
 
         for url in url_lists:
@@ -33,9 +36,25 @@ def prod_review():
             for document in result:
                 texts += document.page_content + " "
 
-        text_splitter = CharacterTextSplitter(separator = " ",chunk_size=1000, chunk_overlap=200)
+        text_splitter = CharacterTextSplitter(
+            separator=" ", chunk_size=1500, chunk_overlap=200
+        )
         chunks = text_splitter.split_text(texts)
-        
+        with get_openai_callback() as cb:
+            embeddings = OpenAIEmbeddings()
+            print(cb)
+        vectorstore = FAISS.from_texts(texts=chunks, embedding=embeddings)
+
+        memory = ConversationBufferMemory(
+            memory_key="chat_history", return_messages=True
+        )
+        conv_chain = ConversationalRetrievalChain.from_llm(
+            llm=llm, retriever=vectorstore.as_retriever(), memory=memory
+        )
+
+        return conv_chain
+
+    # return chunks
 
 
 if __name__ == "__main__":

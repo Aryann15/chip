@@ -7,10 +7,13 @@ import Button from "@mui/material/Button";
 import { useState } from "react";
 import { useEffect } from "react";
 import "./styles.css";
+import UserMessage from "../components/UserMessage";
+import BotMessage from "../components/BotMessage";
 
 const Review = () => {
   const [query, setQuery] = useState(null);
   const [messages, setMessages] = useState([]);
+  const [questions, setQuestions] = useState();
   const handleQuery = (event) => {
     setQuery(event.target.value);
   };
@@ -33,23 +36,8 @@ const Review = () => {
         const isObject = typeof data === "object";
         console.log(isObject);
         setMessages(data.answer);
-        console.log(data)
-        console.log(data.question)
-        // console.log(messages);
-        // setMessages((prev) => [
-        //   ...prev,
-        //   {
-        //     type: "human",
-        //     content: data.question,
-        //   },
-        //   {
-        //     type: "ai",
-        //     content: data.answer,
-        //   },
-        // ]);
-        // console.log(data);
-        // console.log(data.body);
-        // setMessages((prev) => [...prev, { type: "bot", msg: botResponse }]);
+        console.log(data);
+        setQuestions(data.question);
       } else {
         throw new Error("Something went wrong");
       }
@@ -58,14 +46,10 @@ const Review = () => {
     }
   };
 
-  // const scrollToBottom = () => {
-  //   const chat = document.getElementById("chat");
-  //   chat.scrollTop = chat.scrollHeight;
-  // };
-
-  // useEffect(() => {
-  //   scrollToBottom();
-  // }, [messages]);
+  const responses = [
+    { type: "user", content: questions },
+    { type: "bot", content: messages },
+  ];
 
   return (
     <>
@@ -126,7 +110,9 @@ const Review = () => {
           sx={{ mb: 2 }}
           color="#FFFFFF"
         >
-          {messages}
+          {questions && <UserMessage message={questions} />}
+          {messages && <BotMessage message={messages} />}
+
         </Typography>
       </Box>
     </>

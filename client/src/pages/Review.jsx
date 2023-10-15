@@ -17,20 +17,37 @@ const Review = () => {
 
   const handleSubmit = async () => {
     try {
+      // const json = JSON.stringify({ query });
+      const formData = new FormData();
+      formData.append("query", query);
+      // JSON.parse(json);
       const response = await fetch("http://localhost:5000/review", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ query }),
+        body: formData,
       });
       console.log(response.ok);
       console.log(response.status);
 
       if (response.ok) {
         const data = await response.json();
-        setMessages([...messages, { query , output: data.output }]);
-        console.log(data);
+        const isObject = typeof data === "object";
+        console.log(isObject);
+        setMessages(data.answer);
+        console.log(data)
+        console.log(data.question)
+        // console.log(messages);
+        // setMessages((prev) => [
+        //   ...prev,
+        //   {
+        //     type: "human",
+        //     content: data.question,
+        //   },
+        //   {
+        //     type: "ai",
+        //     content: data.answer,
+        //   },
+        // ]);
+        // console.log(data);
         // console.log(data.body);
         // setMessages((prev) => [...prev, { type: "bot", msg: botResponse }]);
       } else {
@@ -103,20 +120,13 @@ const Review = () => {
           </div>
         </Card>
         <Typography
-          variant="h5"
+          variant="h7"
           align="center"
           gutterBottom
           sx={{ mb: 2 }}
           color="#FFFFFF"
         >
-          <ul>
-            {messages.map((message) => (
-              <li key={message.input}>
-                <div>{message.input}</div>
-                <div>{message.output}</div>
-              </li>
-            ))}
-          </ul>
+          {messages}
         </Typography>
       </Box>
     </>

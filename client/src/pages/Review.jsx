@@ -9,28 +9,28 @@ import { useEffect } from "react";
 import "./styles.css";
 
 const Review = () => {
-  const [product, setProduct] = useState(null);
-  // const [messages, setMessages] = useState([]);
-  const [botResponse, setBotResponse] = useState("");
-  const handleProduct = (event) => {
-    setProduct(event.target.value);
+  const [query, setQuery] = useState(null);
+  const [messages, setMessages] = useState([]);
+  const handleQuery = (event) => {
+    setQuery(event.target.value);
   };
 
   const handleSubmit = async () => {
-    const formData = new FormData();
-    formData.append("product", product);
     try {
       const response = await fetch("http://localhost:5000/review", {
         method: "POST",
-        body: formData,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ query }),
       });
       console.log(response.ok);
       console.log(response.status);
 
       if (response.ok) {
-        const  data = await response.answer;
-          
-        console.log(data)
+        const data = await response.json();
+        setMessages([...messages, { query , output: data.output }]);
+        console.log(data);
         // console.log(data.body);
         // setMessages((prev) => [...prev, { type: "bot", msg: botResponse }]);
       } else {
@@ -86,7 +86,7 @@ const Review = () => {
             id="outlined-basic"
             label="Product name"
             variant="outlined"
-            onChange={handleProduct}
+            onChange={handleQuery}
             style={{ width: 400, backgroundColor: "#E3E4FA" }}
           />
           <br />
@@ -99,20 +99,25 @@ const Review = () => {
             >
               submit
             </Button>
-            {console.log(product)}
-            
-            
+            {/* {console.log(product)} */}
           </div>
         </Card>
         <Typography
-              variant="h5"
-              align="center"
-              gutterBottom
-              sx={{ mb: 2 }}
-              color="#FFFFFF"
-            >
-             {botResponse}
-            </Typography>
+          variant="h5"
+          align="center"
+          gutterBottom
+          sx={{ mb: 2 }}
+          color="#FFFFFF"
+        >
+          <ul>
+            {messages.map((message) => (
+              <li key={message.input}>
+                <div>{message.input}</div>
+                <div>{message.output}</div>
+              </li>
+            ))}
+          </ul>
+        </Typography>
       </Box>
     </>
   );

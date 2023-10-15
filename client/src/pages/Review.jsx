@@ -14,6 +14,8 @@ const Review = () => {
   const [query, setQuery] = useState(null);
   const [messages, setMessages] = useState([]);
   const [questions, setQuestions] = useState();
+  const [chatHistory, setChatHistory] = useState([]); 
+
   const handleQuery = (event) => {
     setQuery(event.target.value);
   };
@@ -33,8 +35,9 @@ const Review = () => {
 
       if (response.ok) {
         const data = await response.json();
-        const isObject = typeof data === "object";
-        console.log(isObject);
+        setChatHistory([...chatHistory, { type: 'user', content: data.question }]);
+        setChatHistory([...chatHistory, { type: 'bot', content: data.answer }]);
+       
         setMessages(data.answer);
         console.log(data);
         setQuestions(data.question);
@@ -110,8 +113,15 @@ const Review = () => {
           sx={{ mb: 2 }}
           color="#FFFFFF"
         >
-          {questions && <UserMessage message={questions} />}
-          {messages && <BotMessage message={messages} />}
+           {chatHistory.map((message, index) => {
+            if (message.type === 'user') {
+              return <UserMessage key={index} message={message.content} />;
+            } else if (message.type === 'bot') {
+              return <BotMessage key={index} message={message.content} />;
+            } else {
+              return null;
+            }
+          })}
 
         </Typography>
       </Box>

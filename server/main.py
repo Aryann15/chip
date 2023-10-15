@@ -1,5 +1,6 @@
-from flask import Flask, request
+from flask import Flask, request , jsonify
 from flask_cors import CORS
+import json
 from dotenv import load_dotenv
 from langchain.document_loaders import YoutubeLoader
 from langchain.chat_models import ChatOpenAI
@@ -19,7 +20,7 @@ CORS(app)
 def prod_review():
     load_dotenv()
 
-    query = request.form["product"]
+    query = request.form["query"]
 
     if query:
         url_lists = [
@@ -55,9 +56,28 @@ def prod_review():
         )
         print("finished conversational chain")
 
-        answer =  str (conv_chain({"question":query}))
-        print (answer)
-        return answer
+        answer =  (conv_chain({"question":query}))
+        if 'chat_history' in answer and len(answer['chat_history']) > 0:
+            response = {
+                "answer": answer['chat_history'][-1].content,  # Assuming the last message is the answer
+                "question": query
+            }
+        else:
+            response = {
+                "answer": "No answer found",
+                "question": query
+            }
+
+        return jsonify(response)
+
+
+
+
+
+
+
+        # # print (answer)
+        # # return (answer)
     
 
         

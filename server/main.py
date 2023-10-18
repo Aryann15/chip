@@ -1,4 +1,4 @@
-from flask import Flask, request , jsonify
+from flask import Flask, request, jsonify
 from flask_cors import CORS
 import json
 from dotenv import load_dotenv
@@ -11,7 +11,8 @@ from langchain.vectorstores import FAISS
 from langchain.callbacks import get_openai_callback
 from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
-
+from apiclient.discovery import build
+import os
 app = Flask(__name__)
 CORS(app)
 
@@ -20,15 +21,12 @@ CORS(app)
 def prod_review():
     load_dotenv()
 
+    api_key = os.environ.get("YOUTUBE_API_KEY")
+    openai_api_key = os.environ.get("OPENAI_API_KEY")
     query = request.form["query"]
-
     if query:
-        url_lists = [
-            "https://www.youtube.com/watch?v=_i_XWx05FTw",
-            "https://www.youtube.com/watch?v=f4g2nPY-VZc",
-            "https://www.youtube.com/watch?v=3XpK9fM_HDM",
-        ]
-        llm = ChatOpenAI(temperature=0)
+        url_lists = []
+        llm = ChatOpenAI(temperature=0 ,api_key = openai_api_key)
         texts = ""
 
         for url in url_lists:
@@ -42,47 +40,34 @@ def prod_review():
         )
         chunks = text_splitter.split_text(texts)
         with get_openai_callback() as cb:
-            embeddings = OpenAIEmbeddings()
+            embeddings = OpenAIEmbeddings(api_key= openai_api_key)
             print(cb)
         vectorstore = FAISS.from_texts(texts=chunks, embedding=embeddings)
         print("vs init")
 
         memory = ConversationBufferMemory(
-            memory_key="chat_history", return_messages=True
-        ) 
+            memory_key="chat_history", k=8, return_messages=True
+        )
         print("finished conversational memory")
         conv_chain = ConversationalRetrievalChain.from_llm(
-            llm=llm, retriever=vectorstore.as_retriever(), memory=memory
+            llm=llm,
+            retriever=vectorstore.as_retriever(search_kwargs={"k": 3}),
+            memory=memory,
         )
         print("finished conversational chain")
 
-        answer =  (conv_chain({"question":query}))
-        if 'chat_history' in answer and len(answer['chat_history']) > 0:
-            response = {
-                "answer": answer['chat_history'][-1].content,  # Assuming the last message is the answer
-                "question": query
-            }
+        answer = conv_chain({"question": query})
+        if "chat_history" in answer and len(answer["chat_history"]) > 0:
+            response = {"answer": answer["chat_history"][-1].content, "question": query}
         else:
-            response = {
-                "answer": "No answer found",
-                "question": query
-            }
+            response = {"answer": "No answer found", "question": query}
 
         return jsonify(response)
 
+        # print (answer)
+        # return (answer)
 
-
-
-
-
-
-        # # print (answer)
-        # # return (answer)
-    
-
-        
-
-    # return chunks
+    return chunks
 
 
 if __name__ == "__main__":

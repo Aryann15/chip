@@ -25,7 +25,15 @@ def prod_review():
     openai_api_key = os.environ.get("OPENAI_API_KEY")
     query = request.form["query"]
     if query:
-        url_lists = []
+        youtube = build ('youtube', 'v3', developerKey = api_key)
+        product = query
+        channel_ids = [
+            "UCBJycsmduvYEL83R_U4JriQ", 
+            "UCMiJRAwDNSNzuYeN2uWa0pA",
+            "UCXuqSBlHAE6Xw-yeJA0Tunw"
+            ]
+        url_lists= []
+
         llm = ChatOpenAI(temperature=0 ,api_key = openai_api_key)
         texts = ""
 

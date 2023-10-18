@@ -34,6 +34,11 @@ def prod_review():
             ]
         url_lists= []
 
+
+        for channel_id in channel_ids:
+            req = youtube.search().list (q= product + " review" , part= "snippet" , channelId=channel_id , type = 'video', maxResults = 1)
+            res = req.execute()
+
         llm = ChatOpenAI(temperature=0 ,api_key = openai_api_key)
         texts = ""
 

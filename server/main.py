@@ -40,7 +40,7 @@ def prod_review():
             res = req.execute()
             link = res.get("items")[0]["id"]["videoId"]
             youtube_link = "https://www.youtube.com/watch?v=" + link
-            
+            url_lists.append(youtube_link)
 
         llm = ChatOpenAI(temperature=0 ,api_key = openai_api_key)
         texts = ""

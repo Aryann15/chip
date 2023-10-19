@@ -4,11 +4,17 @@ import Card from "@mui/material/Card";
 import TextField from "@mui/material/TextField";
 import { Typography } from "@mui/material";
 import Button from "@mui/material/Button";
+import { useNavigate } from "react-router-dom";
 import "./Home.css";
+
+
+
+
+
 const Home = () => {
   const [buttons, setButtons] = useState(false);
   const [product, setProduct] = useState();
-
+  const navigate = useNavigate();
   const handleProduct = (event) => {
     setProduct(event.target.value);
   };
@@ -52,8 +58,13 @@ const Home = () => {
       <br />
       <br />
       <div className="button-container">
-        
-        <div style={{ display: "flex", justifyContent: "center", flexDirection:"column" }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            flexDirection: "column",
+          }}
+        >
           <Button
             variant="contained"
             onClick={handleSubmit}
@@ -67,19 +78,21 @@ const Home = () => {
             <div>
               <Button
                 variant="contained"
-                onClick={handleSubmit}
+                onClick={() => {
+                  navigate("/review");
+                }}
                 style={{ width: 100, backgroundColor: "#2E4053" }}
               >
-             
                 Review
               </Button>
 
               <Button
                 variant="contained"
-                onClick={handleSubmit}
+                onClick={() => {
+                  navigate("/qna");
+                }}
                 style={{ width: 100, backgroundColor: "#2E4053" }}
               >
-                
                 QnA
               </Button>
             </div>

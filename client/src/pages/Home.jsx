@@ -11,12 +11,16 @@ import Button from "@mui/material/Button";
 
 const Home = () => {
   const [buttons , setButtons ] = useState(false)
+  const [product , setProduct] = useState()
 
+  const handleProduct = (event) => {
+    setProduct(event.target.value)
+  }
 
   const handleSubmit = async () => {
     try {
       const formData = new FormData();
-      // formData.append("product", product);
+      formData.append("product", product);
       const response = await fetch("http://localhost:5000/", {
         method: "POST",
         body: formData,
@@ -61,7 +65,7 @@ const Home = () => {
         id="outlined-basic"
         label="Product"
         variant="outlined"
-        // onChange={handleProduct}
+        onChange={handleProduct}
         style={{ width: 400, backgroundColor: "#E3E4FA" }}
       />
       <br />

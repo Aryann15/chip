@@ -23,10 +23,11 @@ def prod_review():
 
     api_key = os.environ.get("YOUTUBE_API_KEY")
     openai_api_key = os.environ.get("OPENAI_API_KEY")
+    product = request.form["product"]
     query = request.form["query"]
-    if query:
+    if query and product:
         youtube = build ('youtube', 'v3', developerKey = api_key)
-        product = query
+        product = product
         channel_ids = [
             "UCBJycsmduvYEL83R_U4JriQ", 
             "UCMiJRAwDNSNzuYeN2uWa0pA",
@@ -42,7 +43,7 @@ def prod_review():
             youtube_link = "https://www.youtube.com/watch?v=" + link
             url_lists.append(youtube_link)
 
-        llm = ChatOpenAI(temperature=0 ,api_key = openai_api_key)
+        llm = ChatOpenAI(temperature=0)
         texts = ""
 
         for url in url_lists:
@@ -56,13 +57,13 @@ def prod_review():
         )
         chunks = text_splitter.split_text(texts)
         with get_openai_callback() as cb:
-            embeddings = OpenAIEmbeddings(api_key= openai_api_key)
+            embeddings = OpenAIEmbeddings()
             print(cb)
         vectorstore = FAISS.from_texts(texts=chunks, embedding=embeddings)
         print("vs init")
 
         memory = ConversationBufferMemory(
-            memory_key="chat_history", k=8, return_messages=True
+            memory_key="chat_history", k=3, return_messages=True
         )
         print("finished conversational memory")
         conv_chain = ConversationalRetrievalChain.from_llm(
@@ -82,8 +83,8 @@ def prod_review():
 
         # print (answer)
         # return (answer)
-
-    return chunks
+        
+    # return url_lists
 
 
 if __name__ == "__main__":

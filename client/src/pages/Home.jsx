@@ -31,6 +31,7 @@ const Home = () => {
       if (response.ok) {
         const data = await response.json()
         setButtons(true)
+        console.log(data)
       } else {
         throw new Error("Something went wrong");
       }
@@ -74,11 +75,29 @@ const Home = () => {
         <Button
           variant="contained"
           onClick={handleSubmit}
-          style={{ width: 100, backgroundColor: "#4169E1" }}
+          style={{ width: 100,height:50, backgroundColor: "#4169E1" }}
         >
           submit
         </Button>
 
+<br /><br /> <br /><br />
+        {buttons ? (
+          <div>
+        <Button
+          variant="contained"
+          onClick={handleSubmit}
+          style={{ width: 100, backgroundColor: "#2E4053" }}
+        > Review
+        </Button>
+
+        <Button
+        variant="contained"
+        onClick={handleSubmit}
+        style={{ width: 100, backgroundColor: "#2E4053" }}
+      > QnA
+      </Button>
+      </div>
+        ): null}
 
         
 

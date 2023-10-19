@@ -4,18 +4,14 @@ import Card from "@mui/material/Card";
 import TextField from "@mui/material/TextField";
 import { Typography } from "@mui/material";
 import Button from "@mui/material/Button";
-
-
-
-
-
+import "./Home.css";
 const Home = () => {
-  const [buttons , setButtons ] = useState(false)
-  const [product , setProduct] = useState()
+  const [buttons, setButtons] = useState(false);
+  const [product, setProduct] = useState();
 
   const handleProduct = (event) => {
-    setProduct(event.target.value)
-  }
+    setProduct(event.target.value);
+  };
 
   const handleSubmit = async () => {
     try {
@@ -29,9 +25,9 @@ const Home = () => {
       console.log(response.status);
 
       if (response.ok) {
-        const data = await response.json()
-        setButtons(true)
-        console.log(data)
+        const data = await response.json();
+        setButtons(true);
+        console.log(data);
       } else {
         throw new Error("Something went wrong");
       }
@@ -40,25 +36,9 @@ const Home = () => {
     }
   };
 
-    
   return (
-    <Card
-      variant="outlined"
-      sx={{
-        maxWidth: 400,
-        maxHeight: 300,
-        p: 3,
-        mx: "auto",
-        bgcolor: "#95B9C7",
-      }}
-    >
-      <Typography
-        variant="h6"
-        align="center"
-        gutterBottom
-        sx={{ mb: 1.5 }}
-        color="#00000"
-      >
+    <div className="home">
+      <Typography variant="h6" gutterBottom sx={{ mb: 1.5 }} color="#00000">
         Your Product name
       </Typography>
 
@@ -71,39 +51,44 @@ const Home = () => {
       />
       <br />
       <br />
-      <div style={{ display: "flex", justifyContent: "center" }}>
-        <Button
-          variant="contained"
-          onClick={handleSubmit}
-          style={{ width: 100,height:50, backgroundColor: "#4169E1" }}
-        >
-          submit
-        </Button>
-
-<br /><br /> <br /><br />
-        {buttons ? (
-          <div>
-        <Button
-          variant="contained"
-          onClick={handleSubmit}
-          style={{ width: 100, backgroundColor: "#2E4053" }}
-        > Review
-        </Button>
-
-        <Button
-        variant="contained"
-        onClick={handleSubmit}
-        style={{ width: 100, backgroundColor: "#2E4053" }}
-      > QnA
-      </Button>
-      </div>
-        ): null}
-
+      <div className="button-container">
         
+        <div style={{ display: "flex", justifyContent: "center", flexDirection:"column" }}>
+          <Button
+            variant="contained"
+            onClick={handleSubmit}
+            style={{ width: 100, height: 50, backgroundColor: "#4169E1" }}
+          >
+            submit
+          </Button>
+          <br />
 
-        {/* {console.log(product)} */}
+          {buttons ? (
+            <div>
+              <Button
+                variant="contained"
+                onClick={handleSubmit}
+                style={{ width: 100, backgroundColor: "#2E4053" }}
+              >
+             
+                Review
+              </Button>
+
+              <Button
+                variant="contained"
+                onClick={handleSubmit}
+                style={{ width: 100, backgroundColor: "#2E4053" }}
+              >
+                
+                QnA
+              </Button>
+            </div>
+          ) : null}
+
+          {/* {console.log(product)} */}
+        </div>
       </div>
-    </Card>
+    </div>
   );
 };
 

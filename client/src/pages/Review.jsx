@@ -14,10 +14,14 @@ const Review = () => {
   const [query, setQuery] = useState(null);
   const [messages, setMessages] = useState([]);
   const [questions, setQuestions] = useState();
+  const [product , setProduct ]= useState();
   const [chatHistory, setChatHistory] = useState([]); 
 
   const handleQuery = (event) => {
     setQuery(event.target.value);
+  };
+  const handleProduct = (event) => {
+    setProduct(event.target.value);
   };
 
   const handleSubmit = async () => {
@@ -25,6 +29,7 @@ const Review = () => {
       // const json = JSON.stringify({ query });
       const formData = new FormData();
       formData.append("query", query);
+      formData.append("product", product);
       // JSON.parse(json);
       const response = await fetch("http://localhost:5000/review", {
         method: "POST",
@@ -35,9 +40,12 @@ const Review = () => {
 
       if (response.ok) {
         const data = await response.json();
-        setChatHistory([...chatHistory, { type: 'user', content: data.question }]);
-        setChatHistory([...chatHistory, { type: 'bot', content: data.answer }]);
-       
+        setChatHistory([
+          ...chatHistory,
+          { type: 'user', content: data.question },
+          { type: 'bot', content: data.answer },
+        ]);
+
         setMessages(data.answer);
         console.log(data);
         setQuestions(data.question);
@@ -49,21 +57,17 @@ const Review = () => {
     }
   };
 
-  const responses = [
-    { type: "user", content: questions },
-    { type: "bot", content: messages },
-  ];
 
   return (
     <>
-      <Box sx={{ bgcolor: "#737CA1", height: "100vh" }}>
+      <Box sx={{ bgcolor: "#", height: "100vh" }}>
         <br />
         <Typography
           variant="h5"
           align="center"
           gutterBottom
           sx={{ mb: 2 }}
-          color="#FFFFFF"
+          color=""
         >
           Get a Detailed Review about your product!
         </Typography>
@@ -86,13 +90,20 @@ const Review = () => {
           >
             Your Product name
           </Typography>
+          
           <TextField
             id="outlined-basic"
-            label="Product name"
+            label="Product"
             variant="outlined"
-            onChange={handleQuery}
+            onChange={handleProduct}
             style={{ width: 400, backgroundColor: "#E3E4FA" }}
-          />
+          /><TextField
+          id="outlined-basic"
+          label="Question"
+          variant="outlined"
+          onChange={handleQuery}
+          style={{ width: 400, backgroundColor: "#E3E4FA" }}
+        />
           <br />
           <br />
           <div style={{ display: "flex", justifyContent: "center" }}>
@@ -106,6 +117,7 @@ const Review = () => {
             {/* {console.log(product)} */}
           </div>
         </Card>
+        <br /><br />
         <Typography
           variant="h7"
           align="center"

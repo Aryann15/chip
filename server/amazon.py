@@ -1,6 +1,6 @@
 from requests_html import HTMLSession
 
-product= "Macbook air m1"
+product= "Lenovo Idepad 15inch"
 url_product = ""
 
 for letter in product:
@@ -19,3 +19,12 @@ r.html.render(sleep=1)
 
 products= r.html.find('div[data-asin]')
 
+asins = []
+for product in products:
+    if product.attrs['data-asin'] != '':
+        asins.append(product.attrs['data-asin'])
+
+
+actual_url= "https://www.amazon.in/dp/"+asins[0]
+
+print(actual_url)

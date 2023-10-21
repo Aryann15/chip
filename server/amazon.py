@@ -1,4 +1,7 @@
 from requests_html import HTMLSession
+import requests
+from bs4 import BeautifulSoup
+
 
 product= "Macbook air m1"
 url_product = ""
@@ -33,7 +36,24 @@ asin= get_asin(url)
 def get_data(actual_url):
     r=s.get(actual_url)
     productName = r.html.find('#productTitle', first = True).full_text.strip()
-     
+    ratingsCount = r.html.find('#crCustomerReviewText',first = True).full_text.strip()
     return productName
 
-print (get_data('https://www.amazon.in/dp/B08N5W4NNB'))
+def reviews(review_url):
+    headers = {"User-Agent":"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36"}
+    res = requests.get(review_url, headers=headers)
+    soup = BeautifulSoup(res.text,"html.parser")
+    reviews = soup.find_all("div",{"data-hook":"review"})
+
+    reviewList = []
+
+    for item in reviews:
+        review = {
+        'title' : item.find('a',{'data-hook':'review-title'}).text.strip('\n')[19:],
+        'rating' : float(item.find('i',{'data-hook':'review-star-rating'}).text.replace('out of 5 stars' , '').strip()),
+        'body' : item.find('span',{'data-hook':'review-body'}).text.strip(),
+        }
+        reviewList.append(review)
+    return reviewList
+
+print(reviews('https://www.amazon.in/product-reviews/B08N5T6CZ6/ref=cm_cr_arp_d_viewopt_srt?ie=UTF8&reviewerType=all_reviews&sortBy=recent&pageNumber=1'))

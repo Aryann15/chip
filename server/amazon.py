@@ -54,13 +54,13 @@ def reviews(asin):
                     .text.replace("out of 5 stars", "")
                     .strip()
                 ),
-                "body": item.find("span", {"data-hook": "review-body"}).text.strip(),
+                "body": item.find("span", {"data-hook": "review-body"}).text.replace("The media could not be loaded.\n                \n\n\n\n\xa0","").strip(),
             }
             critical_reviewList.append(review)
 
 
         res2 = requests.get(all_review, headers=headers)
-        soup = BeautifulSoup(res.text, "html.parser")
+        soup = BeautifulSoup(res2.text, "html.parser")
         reviews = soup.find_all("div", {"data-hook": "review"})
 
         for item in reviews:
@@ -76,7 +76,11 @@ def reviews(asin):
                 "body": item.find("span", {"data-hook": "review-body"}).text.strip(),
             }
             all_reviewList.append(review)   
-    return len(all_reviewList)
+    combined_reviews = {
+        "all reviews": all_reviewList,
+        "crictical reviews": critical_reviewList
+    }
+    return combined_reviews
 
 # print(asin)
 print(reviews(asin))

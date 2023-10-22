@@ -31,13 +31,16 @@ def get_asin(url):
 asin = get_asin(url)
 
 def reviews(asin): 
-    reviewList = []
+    critical_reviewList = []
+    all_reviewList= []
     headers = {
         "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36"
     }
-    for x in range (1,10):
-        review_url = f"https://www.amazon.in/product-reviews/{asin}/ref=cm_cr_arp_d_viewopt_sr?ie=UTF8&reviewerType=all_reviews&sortBy=recent&pageNumber=1filterByStar=all_stars&pageNumber={x}"
-        res = requests.get(review_url, headers=headers)
+    for x in range (1,11):
+        critical = f'https://www.amazon.in/product-reviews/{asin}/ref=cm_cr_arp_d_viewopt_sr?ie=UTF8&reviewerType=all_reviews&filterByStar=critical&pageNumber=1&sortBy=helpful&pageNumber={x}'
+        all_review = f"https://www.amazon.in/product-reviews/{asin}/ref=cm_cr_arp_d_viewopt_sr?ie=UTF8&reviewerType=all_reviews&pageNumber=1filterByStar=all_stars&sortBy=recent&pageNumber={x}"
+        
+        res = requests.get(critical, headers=headers)
         soup = BeautifulSoup(res.text, "html.parser")
         reviews = soup.find_all("div", {"data-hook": "review"})
 
@@ -53,8 +56,27 @@ def reviews(asin):
                 ),
                 "body": item.find("span", {"data-hook": "review-body"}).text.strip(),
             }
-            reviewList.append(review)
-    return len(reviewList)
+            critical_reviewList.append(review)
+
+
+        res2 = requests.get(all_review, headers=headers)
+        soup = BeautifulSoup(res.text, "html.parser")
+        reviews = soup.find_all("div", {"data-hook": "review"})
+
+        for item in reviews:
+            review = {
+                "title": item.find("a", {"data-hook": "review-title"}).text.strip("\n")[
+                    19:
+                ],
+                "rating": float(
+                    item.find("i", {"data-hook": "review-star-rating"})
+                    .text.replace("out of 5 stars", "")
+                    .strip()
+                ),
+                "body": item.find("span", {"data-hook": "review-body"}).text.strip(),
+            }
+            all_reviewList.append(review)   
+    return len(all_reviewList)
 
 # print(asin)
 print(reviews(asin))

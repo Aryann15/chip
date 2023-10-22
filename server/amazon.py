@@ -24,28 +24,20 @@ def get_asin(url):
     for product in products:
         if product.attrs["data-asin"] != "":
             asins.append(product.attrs["data-asin"])
-    actual_url = "https://www.amazon.in/dp/" + asins[0]
+    actual_url = asins[1]
     return actual_url
 
 
 asin = get_asin(url)
 
-
-def reviews(asin):
+def reviews(asin): 
     reviewList = []
     headers = {
         "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36"
     }
-    review_url = [
-        
-        f"https://www.amazon.in/product-reviews/{asin}/ref=cm_cr_arp_d_viewopt_sr?ie=UTF8&reviewerType=all_reviews&sortBy=recent&pageNumber=1&filterByStar=five_star",
-        f"https://www.amazon.in/product-reviews/{asin}/ref=cm_cr_arp_d_viewopt_sr?ie=UTF8&reviewerType=all_reviews&sortBy=recent&pageNumber=1&filterByStar=four_star",
-        f"https://www.amazon.in/product-reviews/{asin}/ref=cm_cr_arp_d_viewopt_sr?ie=UTF8&reviewerType=all_reviews&sortBy=recent&pageNumber=1&filterByStar=three_star",
-        f"https://www.amazon.in/product-reviews/{asin}/ref=cm_cr_arp_d_viewopt_sr?ie=UTF8&reviewerType=all_reviews&sortBy=recent&pageNumber=1&filterByStar=two_star",
-        f"https://www.amazon.in/product-reviews/{asin}/ref=cm_cr_arp_d_viewopt_sr?ie=UTF8&reviewerType=all_reviews&sortBy=recent&pageNumber=1&filterByStar=one_star",
-    ]
-    for url in review_url:
-        res = requests.get(url, headers=headers)
+    for x in range (1,10):
+        review_url = f"https://www.amazon.in/product-reviews/{asin}/ref=cm_cr_arp_d_viewopt_sr?ie=UTF8&reviewerType=all_reviews&sortBy=recent&pageNumber=1filterByStar=all_stars&pageNumber={x}"
+        res = requests.get(review_url, headers=headers)
         soup = BeautifulSoup(res.text, "html.parser")
         reviews = soup.find_all("div", {"data-hook": "review"})
 
@@ -64,5 +56,5 @@ def reviews(asin):
             reviewList.append(review)
     return len(reviewList)
 
-
-print(reviews("B08N5W4NNB"))
+# print(asin)
+print(reviews(asin))
